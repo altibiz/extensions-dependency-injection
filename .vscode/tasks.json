@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/Altibiz.DependencyInjection.Extensions/Altibiz.DependencyInjection.Extensions.csproj",
+        "--configuration",
+        "Debug",
+        "--property:GenerateFullPaths=true",
+        "--consoleloggerparameters:ErrorsOnly"
+      ],
+      "options": {
+        "env": {
+          "DOTNET_ENVIRONMENT": "Development"
+        }
+      }
+    }
+  ]
+}

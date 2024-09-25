@@ -1,0 +1,38 @@
+{
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    ".direnv": true,
+    "docs/wiki/**/book": true,
+    "artifacts": true,
+    "**/cache": true
+  },
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    ".direnv": true,
+    "docs/wiki/**/book": true,
+    "artifacts": true,
+    "**/cache": true
+  },
+  "prettier.ignorePath": ".prettierignore",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize",
+  "editor.insertSpaces": true,
+  "editor.rulers": [
+    {
+      "column": 80,
+      "color": "#CCCCDD"
+    }
+  ],
+  "editor.wordWrap": "off",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true
+}

@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/streetsidesoftware/cspell/main/packages/cspell-types/cspell.schema.json
+useGitignore: true
+version: "0.2"
+language: en
+ignorePaths:
+  - "deps.nix"
+  - "justfile"
+  - "flake.nix"
+  - "omnisharp.json"
+  - ".github/workflows/*"
+  - "cspell.yaml"
+  - "./.config/dotnet-tools.json"
+words:
+  - "nushell"
+  - "justfile"
+  - "omnisharp"
+  - "plantuml"
+  - "typeof"
+  - "struct"
+  - "startuml"
+  - "enduml"
+  - "mdbook"
+  - "contentfiles"
+  - "altibiz"
+  - "hrvoje"
+  - "juric"
+  - "jurić"
+  - "taplo"
+  - "nixpkgs"
+  - "xunit"
+  - "buildtransitive"
+  - "meziantou"
+  - "dotenv"
