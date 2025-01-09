@@ -70,6 +70,10 @@ public class ServiceCollectionExtensionsTest
         typeof(FirstImplementation),
         lifetime),
       new ServiceDescriptor(
+        typeof(GenericImplementation<>),
+        typeof(GenericImplementation<>),
+        lifetime),
+      new ServiceDescriptor(
         typeof(SecondImplementation),
         typeof(SecondImplementation),
         lifetime),
@@ -146,6 +150,7 @@ public class ServiceCollectionExtensionsTest
         service =>
           service.ImplementationType == typeof(FirstImplementation)
           || service.ImplementationType == typeof(SecondImplementation)
+          || service.ImplementationType == typeof(GenericImplementation<>)
           || (service.ImplementationType is { IsGenericType: true } &&
             service.ImplementationType?.GetGenericTypeDefinition()
             == typeof(HostedServiceModularTenantEvents<>)))
@@ -160,6 +165,10 @@ public class ServiceCollectionExtensionsTest
       new ServiceDescriptor(
         typeof(IInterface),
         typeof(FirstImplementation),
+        ServiceLifetime.Singleton),
+      new ServiceDescriptor(
+        typeof(GenericImplementation<>),
+        typeof(GenericImplementation<>),
         ServiceLifetime.Singleton),
       new ServiceDescriptor(
         typeof(SecondImplementation),
@@ -224,6 +233,21 @@ internal class FirstImplementation : IInterface, IHostedService
 }
 
 internal class SecondImplementation : IInterface, IHostedService
+{
+  public Task StartAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StopAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+}
+
+#pragma warning disable S2326 // Unused type parameters should be removed
+internal class GenericImplementation<T> : IInterface, IHostedService
+#pragma warning restore S2326 // Unused type parameters should be removed
 {
   public Task StartAsync(CancellationToken cancellationToken)
   {

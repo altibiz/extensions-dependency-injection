@@ -258,6 +258,11 @@ public static class ServiceCollectionExtensions
         conversionType,
         lifetime);
       services.Add(conversionTypeDescriptor);
+      if (conversionType.ContainsGenericParameters)
+      {
+        continue;
+      }
+
       foreach (var interfaceType in conversionType
         .GetAllInterfaces()
         .OrderBy(type => type.FullName))

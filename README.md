@@ -1,4 +1,4 @@
-# Altibiz.DependencyInjection
+# Altibiz.DependencyInjection.Extensions
 
 Collection of extensions used by multiple Altibiz projects.
 
