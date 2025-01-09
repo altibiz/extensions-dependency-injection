@@ -89,7 +89,7 @@ docs:
     cp '{{ docs }}/index.html' '{{ artifacts }}'
     cp '{{ docs }}/favicon.png' '{{ artifacts }}'
 
-publish api_key version:
+deploy api_key version:
     rm -rf '{{ artifacts }}'
     mkdir '{{ artifacts }}'
 
