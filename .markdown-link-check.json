@@ -10,7 +10,7 @@
       "pattern": "^http://localhost"
     },
     {
-      "pattern": "^https://altibiz.github.io/extensions-dependency-injection/"
+      "pattern": "^https://github.com/altibiz/extensions-dependency-injection/compare"
     }
   ]
 }
