@@ -25,6 +25,21 @@
     hash = "sha256-DYaYeWMKUREqiKd7aLQo2gnHEmMvXS1YiuuxPVZ6xsw=";
   })
   (fetchNuGet {
+    pname = "Microsoft.Extensions.DependencyInjection.Abstractions";
+    version = "8.0.2";
+    hash = "sha256-UfLfEQAkXxDaVPC7foE/J3FVEXd31Pu6uQIhTic3JgY=";
+  })
+  (fetchNuGet {
+    pname = "Newtonsoft.Json";
+    version = "13.0.3";
+    hash = "sha256-hy/BieY4qxBWVVsDqqOPaLy1QobiIapkbrESm6v2PHc=";
+  })
+  (fetchNuGet {
+    pname = "OrchardCore.Abstractions";
+    version = "1.8.3";
+    hash = "sha256-qf4wxbLMxPTjGuOwI4iaGayhQrJwZ/YEAncxOOY5n/w=";
+  })
+  (fetchNuGet {
     pname = "Roslynator.DotNet.Cli";
     version = "0.8.9";
     hash = "sha256-tcCPAw8PmnXRTr9oGO8Oph0hGCC55NMOPVno7lHjhkE=";
@@ -38,5 +53,10 @@
     pname = "StyleCop.Analyzers";
     version = "1.1.118";
     hash = "sha256-CjC1f5z0sP15F6FeXqIDOtZLHqgjmQTzpsIrRkxXREI=";
+  })
+  (fetchNuGet {
+    pname = "ZString";
+    version = "2.5.1";
+    hash = "sha256-7sENkAu0OzdUPV/ts60DfsaJdY+hg+2Bm7EELMvhl3Y=";
   })
 ]
