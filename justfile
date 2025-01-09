@@ -75,6 +75,9 @@ lint:
 test *args:
     dotnet test '{{ sln }}' {{ args }}
 
+wiki:
+    mdbook serve '{{ docs }}/wiki'
+
 docs:
     rm -rf '{{ artifacts }}'
     mkdir '{{ artifacts }}'

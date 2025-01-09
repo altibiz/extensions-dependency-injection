@@ -107,6 +107,29 @@ public class ServiceCollectionExtensionsTest
             .BeOfType(expected.ImplementationType);
         }
       });
+
+    if (lifetime == ServiceLifetime.Singleton)
+    {
+      List<object> concrete =
+      [
+        serviceProvider.GetRequiredService<FirstImplementation>(),
+        serviceProvider.GetRequiredService<SecondImplementation>()
+      ];
+      var interfaces = serviceProvider
+        .GetServices<IInterface>()
+        .OfType<object>()
+        .ToList();
+      var hostedServices = serviceProvider
+        .GetServices<IHostedService>()
+        .OfType<object>()
+        .ToList();
+      concrete.Zip(interfaces).Zip(hostedServices).Should().AllSatisfy(
+        x =>
+        {
+          var ((concrete, @interface), hostedService) = x;
+          concrete.Should().BeSameAs(@interface).And.BeSameAs(hostedService);
+        });
+    }
   }
 
   [Fact]
