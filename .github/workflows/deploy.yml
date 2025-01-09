@@ -41,7 +41,7 @@ jobs:
         run: nix develop .#check -c just ci
 
       - name: publish
-        run: |
-          nix develop .#check -c just publish \
-            ${{ secrets.NUGET_API_KEY }} \
+        run: >-
+          nix develop .#check -c just publish
+            ${{ secrets.NUGET_API_KEY }}
             ${{ needs.version.outputs.version }}

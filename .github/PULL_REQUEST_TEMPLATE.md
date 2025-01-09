@@ -9,6 +9,9 @@
   Fixes #16.
 -->
 
+- [ ] I have read the [CONTRIBUTING.md](../CONTRIBUTING.md) document.
+- [ ] I have added an entry to the [CHANGELOG.md](../CHANGELOG.md) document.
+
 ## Description
 
 <!-- TODO:
