@@ -92,12 +92,12 @@ internal sealed class HostedLifecycleServiceModularTenantEvents<THostedService>
 
   private void Stopping()
   {
-    StoppingAsync().GetAwaiter().GetResult();
+    Task.Run(StoppingAsync).GetAwaiter().GetResult();
   }
 
   private void Stopped()
   {
-    StoppedAsync().GetAwaiter().GetResult();
+    Task.Run(StoppedAsync).GetAwaiter().GetResult();
   }
 
   private async Task StartingAsync()
