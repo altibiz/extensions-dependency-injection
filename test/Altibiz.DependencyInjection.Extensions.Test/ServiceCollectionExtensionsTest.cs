@@ -151,9 +151,12 @@ public class ServiceCollectionExtensionsTest
   [Fact]
   public void ConvertHostedServicesToModularTenantEventsTest()
   {
+    var hostApplicationLifetimeMock = new Mock<IHostApplicationLifetime>();
+
     var serviceCollection = new ServiceCollection();
     serviceCollection.AddLogging();
     serviceCollection.AddSingleton(services => new ShellSettings());
+    serviceCollection.AddSingleton(hostApplicationLifetimeMock.Object);
 
     var actual = serviceCollection
       .AddSingletonAssignableTo<IInterface>()

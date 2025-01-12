@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
 namespace Altibiz.DependencyInjection.Extensions;
@@ -9,178 +10,145 @@ namespace Altibiz.DependencyInjection.Extensions;
 ///   A modular tenant events that starts and stops a hosted service.
 /// </summary>
 /// <typeparam name="THostedService">The hosted service type.</typeparam>
-internal sealed class HostedLifecycleServiceModularTenantEvents<THostedService>(
-  THostedService hostedService,
-  ILogger<HostedLifecycleServiceModularTenantEvents<THostedService>> logger,
-  ShellSettings shellSettings
-) : ModularTenantEvents, IAsyncDisposable
+internal sealed class HostedLifecycleServiceModularTenantEvents<THostedService>
+  : ModularTenantEvents, IAsyncDisposable
   where THostedService : IHostedLifecycleService
 {
-  private bool _disposed;
+  private readonly THostedService _hostedService;
 
-  private bool _started;
+  private readonly
+    ILogger<HostedLifecycleServiceModularTenantEvents<THostedService>> _logger;
 
-  private bool _starting;
+  private readonly ShellSettings _shellSettings;
 
-  private bool _stopping;
+#pragma warning disable SA1600 // Elements should be documented
+  public HostedLifecycleServiceModularTenantEvents(
+    THostedService hostedService,
+    ILogger<HostedLifecycleServiceModularTenantEvents<THostedService>> logger,
+    ShellSettings shellSettings,
+    IHostApplicationLifetime hostApplicationLifetime
+  )
+  {
+    _hostedService = hostedService;
+    _logger = logger;
+    _shellSettings = shellSettings;
+
+    hostApplicationLifetime.ApplicationStopping.Register(Stopping);
+    hostApplicationLifetime.ApplicationStopped.Register(Stopped);
+  }
+#pragma warning restore SA1600 // Elements should be documented
 
   /// <inheritdoc />
   public async ValueTask DisposeAsync()
   {
-    if (_disposed)
-    {
-      return;
-    }
+    _logger.LogInformation(
+      "Disposing hosted lifecycle service '{HostedService}'"
+      + " for tenant '{TenantName}'.",
+      _hostedService.GetType().Name,
+      _shellSettings.Name
+    );
 
-    await StoppingAsync();
-    await StoppedAsync();
-
-    if (hostedService is IDisposable disposable)
+    if (_hostedService is IDisposable disposable)
     {
       disposable.Dispose();
     }
 
-    if (hostedService is IAsyncDisposable asyncDisposable)
+    if (_hostedService is IAsyncDisposable asyncDisposable)
     {
       await asyncDisposable.DisposeAsync();
     }
-
-    _disposed = true;
   }
 
   /// <inheritdoc />
   public override async Task ActivatingAsync()
   {
-    ObjectDisposedException.ThrowIf(
-      _disposed,
-      hostedService
-    );
-
     await StartingAsync();
   }
 
   /// <inheritdoc />
   public override async Task ActivatedAsync()
   {
-    ObjectDisposedException.ThrowIf(
-      _disposed,
-      hostedService
-    );
-
     await StartedAsync();
   }
 
   /// <inheritdoc />
   public override async Task TerminatingAsync()
   {
-    ObjectDisposedException.ThrowIf(
-      _disposed,
-      hostedService
-    );
-
     await StoppingAsync();
   }
 
   /// <inheritdoc />
   public override async Task TerminatedAsync()
   {
-    ObjectDisposedException.ThrowIf(
-      _disposed,
-      hostedService
-    );
-
     await StoppedAsync();
+  }
+
+  /// <inheritdoc />
+  public override async Task RemovingAsync(ShellRemovingContext context)
+  {
+    await StoppingAsync();
+    await StoppedAsync();
+  }
+
+  private void Stopping()
+  {
+    StoppingAsync().GetAwaiter().GetResult();
+  }
+
+  private void Stopped()
+  {
+    StoppedAsync().GetAwaiter().GetResult();
   }
 
   private async Task StartingAsync()
   {
-    if (_starting)
-    {
-      return;
-    }
-
-    logger.LogInformation(
-      "Starting hosted lifecycle service '{HostedService}' for tenant '{TenantName}'.",
-      typeof(THostedService).Name,
-      shellSettings.Name
+    _logger.LogInformation(
+      "Starting hosted lifecycle service '{HostedService}'"
+      + " for tenant '{TenantName}'.",
+      _hostedService.GetType().Name,
+      _shellSettings.Name
     );
 
-    await hostedService.StartingAsync(CancellationToken.None);
-
-    _starting = true;
+    await _hostedService.StartingAsync(CancellationToken.None);
   }
 
   private async Task StartedAsync()
   {
-    if (_started)
-    {
-      return;
-    }
+    await _hostedService.StartAsync(CancellationToken.None);
 
-    await hostedService.StartAsync(CancellationToken.None);
+    await _hostedService.StartedAsync(CancellationToken.None);
 
-    await hostedService.StartedAsync(CancellationToken.None);
-
-    logger.LogInformation(
-      "Started hosted lifecycle service '{HostedService}' for tenant '{TenantName}'.",
-      typeof(THostedService).Name,
-      shellSettings.Name
+    _logger.LogInformation(
+      "Started hosted lifecycle service '{HostedService}'"
+      + " for tenant '{TenantName}'.",
+      _hostedService.GetType().Name,
+      _shellSettings.Name
     );
-
-    _started = true;
   }
 
   private async Task StoppingAsync()
   {
-    if (!_starting)
-    {
-      return;
-    }
-
-    if (!_started)
-    {
-      await StartedAsync();
-    }
-
-    logger.LogInformation(
-      "Stopping hosted lifecycle service '{HostedService}' for tenant '{TenantName}'.",
-      typeof(THostedService).Name,
-      shellSettings.Name
+    _logger.LogInformation(
+      "Stopping hosted lifecycle service '{HostedService}'"
+      + " for tenant '{TenantName}'.",
+      _hostedService.GetType().Name,
+      _shellSettings.Name
     );
 
-    await hostedService.StoppingAsync(CancellationToken.None);
-
-    _stopping = true;
+    await _hostedService.StoppingAsync(CancellationToken.None);
   }
 
   private async Task StoppedAsync()
   {
-    if (!_starting)
-    {
-      return;
-    }
+    await _hostedService.StopAsync(CancellationToken.None);
 
-    if (!_started)
-    {
-      await StartedAsync();
-    }
+    await _hostedService.StoppedAsync(CancellationToken.None);
 
-    if (!_stopping)
-    {
-      await StoppingAsync();
-    }
-
-    await hostedService.StopAsync(CancellationToken.None);
-
-    await hostedService.StoppedAsync(CancellationToken.None);
-
-    logger.LogInformation(
-      "Stopped hosted lifecycle service '{HostedService}' for tenant '{TenantName}'.",
-      typeof(THostedService).Name,
-      shellSettings.Name
+    _logger.LogInformation(
+      "Stopped hosted lifecycle service '{HostedService}'"
+      + " for tenant '{TenantName}'.",
+      _hostedService.GetType().Name,
+      _shellSettings.Name
     );
-
-    _starting = false;
-    _started = false;
   }
 }
