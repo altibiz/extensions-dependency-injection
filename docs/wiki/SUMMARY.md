@@ -2,4 +2,4 @@
 
 - [Introduction](./introduction.md)
 - [Adding services](./adding-services.md)
-- [Converting hosted services to modular tenant events](./converting-hosted-services-to-modular-tenant-events.md)
+- [Converting hosted (lifecycle) services to modular tenant events](./converting-hosted-lifecycle-services-to-modular-tenant-events.md)
