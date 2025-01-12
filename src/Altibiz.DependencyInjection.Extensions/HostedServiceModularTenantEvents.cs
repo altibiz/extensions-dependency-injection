@@ -78,7 +78,7 @@ internal sealed class HostedServiceModularTenantEvents<THostedService>
 
   private void Stop()
   {
-    StopAsync().GetAwaiter().GetResult();
+    Task.Run(StopAsync).GetAwaiter().GetResult();
   }
 
   private async Task StartAsync()
