@@ -84,6 +84,18 @@ public class ServiceCollectionExtensionsTest
       new ServiceDescriptor(
         typeof(IHostedService),
         typeof(SecondImplementation),
+        lifetime),
+      new ServiceDescriptor(
+        typeof(ThirdImplementation),
+        typeof(ThirdImplementation),
+        lifetime),
+      new ServiceDescriptor(
+        typeof(IInterface),
+        typeof(ThirdImplementation),
+        lifetime),
+      new ServiceDescriptor(
+        typeof(IHostedLifecycleService),
+        typeof(ThirdImplementation),
         lifetime)
     ];
 
@@ -150,10 +162,14 @@ public class ServiceCollectionExtensionsTest
         service =>
           service.ImplementationType == typeof(FirstImplementation)
           || service.ImplementationType == typeof(SecondImplementation)
+          || service.ImplementationType == typeof(ThirdImplementation)
           || service.ImplementationType == typeof(GenericImplementation<>)
           || (service.ImplementationType is { IsGenericType: true } &&
             service.ImplementationType?.GetGenericTypeDefinition()
-            == typeof(HostedServiceModularTenantEvents<>)))
+            == typeof(HostedServiceModularTenantEvents<>))
+          || (service.ImplementationType is { IsGenericType: true } &&
+            service.ImplementationType?.GetGenericTypeDefinition()
+            == typeof(HostedLifecycleServiceModularTenantEvents<>)))
       .ToList();
 
     List<ServiceDescriptor> expected =
@@ -179,12 +195,24 @@ public class ServiceCollectionExtensionsTest
         typeof(SecondImplementation),
         ServiceLifetime.Singleton),
       new ServiceDescriptor(
+        typeof(ThirdImplementation),
+        typeof(ThirdImplementation),
+        ServiceLifetime.Singleton),
+      new ServiceDescriptor(
+        typeof(IInterface),
+        typeof(ThirdImplementation),
+        ServiceLifetime.Singleton),
+      new ServiceDescriptor(
         typeof(IModularTenantEvents),
         typeof(HostedServiceModularTenantEvents<FirstImplementation>),
         ServiceLifetime.Singleton),
       new ServiceDescriptor(
         typeof(IModularTenantEvents),
         typeof(HostedServiceModularTenantEvents<SecondImplementation>),
+        ServiceLifetime.Singleton),
+      new ServiceDescriptor(
+        typeof(IModularTenantEvents),
+        typeof(HostedLifecycleServiceModularTenantEvents<ThirdImplementation>),
         ServiceLifetime.Singleton)
     ];
 
@@ -240,6 +268,39 @@ internal class SecondImplementation : IInterface, IHostedService
   }
 
   public Task StopAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+}
+
+internal class ThirdImplementation : IInterface, IHostedLifecycleService
+{
+  public Task StartAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StartedAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StartingAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StopAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StoppedAsync(CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task StoppingAsync(CancellationToken cancellationToken)
   {
     throw new NotImplementedException();
   }

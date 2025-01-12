@@ -13,7 +13,7 @@ internal sealed class HostedServiceModularTenantEvents<THostedService>(
   THostedService hostedService,
   ILogger<HostedServiceModularTenantEvents<THostedService>> logger,
   ShellSettings shellSettings
-) : ModularTenantEvents, IDisposable, IAsyncDisposable
+) : ModularTenantEvents, IAsyncDisposable
   where THostedService : IHostedService
 {
   private bool _disposed;
@@ -23,51 +23,23 @@ internal sealed class HostedServiceModularTenantEvents<THostedService>(
   /// <inheritdoc />
   public async ValueTask DisposeAsync()
   {
-    if (hostedService is not IAsyncDisposable asyncDisposable)
-    {
-      return;
-    }
-
     if (_disposed)
     {
-      _disposed = true;
       return;
     }
 
-    if (_started)
+    await StopAsync();
+
+    if (hostedService is IDisposable disposable)
     {
-      await hostedService.StopAsync(CancellationToken.None);
-      _started = false;
+      disposable.Dispose();
     }
 
-    await asyncDisposable.DisposeAsync();
-    _disposed = true;
-  }
-
-  /// <inheritdoc />
-  public void Dispose()
-  {
-    if (hostedService is not IDisposable disposable)
+    if (hostedService is IAsyncDisposable asyncDisposable)
     {
-      return;
+      await asyncDisposable.DisposeAsync();
     }
 
-    if (_disposed)
-    {
-      _disposed = true;
-      return;
-    }
-
-    if (_started)
-    {
-      hostedService
-        .StopAsync(CancellationToken.None)
-        .GetAwaiter()
-        .GetResult();
-      _started = false;
-    }
-
-    disposable.Dispose();
     _disposed = true;
   }
 
@@ -79,6 +51,22 @@ internal sealed class HostedServiceModularTenantEvents<THostedService>(
       hostedService
     );
 
+    await StartAsync();
+  }
+
+  /// <inheritdoc />
+  public override async Task TerminatingAsync()
+  {
+    ObjectDisposedException.ThrowIf(
+      _disposed,
+      hostedService
+    );
+
+    await StopAsync();
+  }
+
+  private async Task StartAsync()
+  {
     if (_started)
     {
       return;
@@ -95,14 +83,8 @@ internal sealed class HostedServiceModularTenantEvents<THostedService>(
     _started = true;
   }
 
-  /// <inheritdoc />
-  public override async Task TerminatingAsync()
+  private async Task StopAsync()
   {
-    ObjectDisposedException.ThrowIf(
-      _disposed,
-      hostedService
-    );
-
     if (!_started)
     {
       return;

@@ -177,7 +177,8 @@ public static class ServiceCollectionExtensions
     var hostedServices = services
       .Where(
         service =>
-          service.ServiceType == typeof(IHostedService) &&
+          (service.ServiceType == typeof(IHostedService)
+            || service.ServiceType == typeof(IHostedLifecycleService)) &&
           service.Lifetime == ServiceLifetime.Singleton)
       .Where(
         service =>
@@ -200,11 +201,13 @@ public static class ServiceCollectionExtensions
     foreach (var hostedService in hostedServices)
     {
       services.Remove(hostedService);
-      var implementationType =
-        typeof(HostedServiceModularTenantEvents<>)
-          .MakeGenericType(
-            hostedService.ImplementationType ??
-            hostedService.ServiceType);
+      var implementationType = (
+          hostedService.ServiceType == typeof(IHostedLifecycleService)
+            ? typeof(HostedLifecycleServiceModularTenantEvents<>)
+            : typeof(HostedServiceModularTenantEvents<>))
+        .MakeGenericType(
+          hostedService.ImplementationType ??
+          hostedService.ServiceType);
       var modularTenantEvents =
         hostedService.ImplementationFactory is { } factory
           ? new ServiceDescriptor(
@@ -263,9 +266,19 @@ public static class ServiceCollectionExtensions
         continue;
       }
 
-      foreach (var interfaceType in conversionType
+      var interfaceTypes = conversionType
         .GetAllInterfaces()
-        .OrderBy(type => type.FullName))
+        .OrderBy(type => type.FullName)
+        .ToList();
+
+      if (interfaceTypes.Contains(typeof(IHostedLifecycleService)))
+      {
+        interfaceTypes = interfaceTypes
+          .Where(type => type != typeof(IHostedService))
+          .ToList();
+      }
+
+      foreach (var interfaceType in interfaceTypes)
       {
         var interfaceTypeDescriptor = new ServiceDescriptor(
           interfaceType,
