@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.10] - 2025-02-02
+
+### Fixed
+
+- Loading types for assemblies not available in Release configuration.
+
 ## [1.0.9] - 2025-01-12
 
 ### Fixed
@@ -80,6 +86,8 @@ and adheres to [Semantic Versioning](https://semver.org/).
 - Adding services assignable to a type to an `IServiceCollection`.
 - Converting hosted services to modular tenant events.
 
+[1.0.10]:
+  https://github.com/altibiz/extensions-dependency-injection/compare/1.0.9...1.0.10
 [1.0.9]:
   https://github.com/altibiz/extensions-dependency-injection/compare/1.0.8...1.0.9
 [1.0.8]:

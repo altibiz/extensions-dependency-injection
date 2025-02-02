@@ -245,13 +245,23 @@ public static class ServiceCollectionExtensions
     var conversionTypes = AppDomain.CurrentDomain
       .GetAssemblies()
       .SelectMany(
-        assembly => assembly
-          .GetTypes()
-          .Where(
-            type =>
-              !type.IsAbstract &&
-              type.IsClass &&
-              type.IsAssignableTo(assignableTo)))
+        assembly =>
+        {
+          try
+          {
+            return assembly
+              .GetTypes()
+              .Where(
+                type =>
+                  !type.IsAbstract &&
+                  type.IsClass &&
+                  type.IsAssignableTo(assignableTo));
+          }
+          catch
+          {
+            return Enumerable.Empty<Type>();
+          }
+        })
       .OrderBy(type => type.FullName);
 
     foreach (var conversionType in conversionTypes)
